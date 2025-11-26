@@ -1,14 +1,34 @@
 package com.example.desirproject
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
 class MainActivity : AppCompatActivity() {
+    val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val data: Intent? = result.data
+        if (data != null) { // Check that we have data returned
+            val question = data.getStringExtra("question_key") // 'string1' needs to match the key we used when we put the string in the Intent
+            val answer = data.getStringExtra("answer_key")
+
+            // Log the value of the strings for easier debugging
+            Log.i("MainActivity", "question:$question")
+            Log.i("MainActivity", "answer:$answer")
+            findViewById<TextView>(R.id.Dax_question).text = question
+            findViewById<TextView>(R.id.Dax_Answer).text = answer
+
+        } else {
+            Log.i("MainActivity", "Returned null data from AddCardActivity")
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -16,8 +36,23 @@ class MainActivity : AppCompatActivity() {
         val questionText = findViewById<TextView>(R.id.Dax_question)
         val answerText = findViewById<TextView>(R.id.Dax_Answer)
 
-        questionText.setOnClickListener {questionText.visibility = View.INVISIBLE}
-        answerText.setOnClickListener {answerText.visibility = View.VISIBLE}
+
+        questionText.setOnClickListener {
+            questionText.visibility = View.INVISIBLE
+            answerText.visibility = View.VISIBLE
+        }
+
+        val icon=findViewById<ImageView>(R.id.ICON)
+        icon.setOnClickListener {
+            val intent = Intent(this, MainActivity2::class.java)
+           resultLauncher.launch(intent)
+
+        }
+
+        answerText.setOnClickListener {
+            questionText.visibility = View.VISIBLE
+            answerText.visibility = View.INVISIBLE
+        }
 
 
 
